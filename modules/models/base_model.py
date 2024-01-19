@@ -904,6 +904,14 @@ class BaseLLMModel:
             filename += ".md"
         save_file(filename, self, chatbot)
 
+    def load_history_token_counts(self):
+        self.all_token_counts = []
+        for i in range(len(self.history)):
+            if self.history[i]["role"] == "user":
+                self.all_token_counts.append(count_token(construct_user(self.history[i]["content"])))
+            elif self.history[i]["role"] == "assistant":
+                self.all_token_counts[-1] += count_token(construct_assistant(self.history[i]["content"]))
+
     def load_chat_history(self, new_history_file_path=None):
         logging.debug(f"{self.user_name} 加载对话历史中……")
         if new_history_file_path is not None:
@@ -953,6 +961,7 @@ class BaseLLMModel:
                 logging.info(f"Trimmed history: {saved_json['history']}")
             logging.debug(f"{self.user_name} 加载对话历史完毕")
             self.history = saved_json["history"]
+            self.load_history_token_counts()
             self.single_turn = saved_json.get("single_turn", self.single_turn)
             self.temperature = saved_json.get("temperature", self.temperature)
             self.top_p = saved_json.get("top_p", self.top_p)

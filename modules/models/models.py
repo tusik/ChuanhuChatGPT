@@ -143,6 +143,7 @@ def get_model(
     presudo_key = hide_middle_chars(access_key)
     if original_model is not None and model is not None:
         model.history = original_model.history
+        model.all_token_counts = original_model.all_token_counts
         model.history_file_path = original_model.history_file_path
     if dont_change_lora_selector:
         return model, msg, chatbot, gr.update(), access_key, presudo_key
